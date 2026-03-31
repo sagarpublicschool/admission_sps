@@ -157,14 +157,17 @@
                 <div style="font-size:12px; line-height:1.8;">
                     <b>Application Number:</b> ${ex.appNo || 'Pending...'}<br>
                     <b>Serial No of Admission:</b> ${ex.sNo || 'Pending...'}<br>
-                    <b>Date of Admission:</b> ${new Date().toLocaleDateString('en-GB')}<br>
-                    <b>Registration No:</b> ${d["Registration No"] || "-"}
+                    <b>Date of Admission:</b> ${new Date().toLocaleDateString('en-GB')}
 </div>
                 </div>
                 <div id="qrPrint" style="margin-top:5px;"></div>
                 <div style="width:100px; height:120px; border:1px solid #000;">${imgs.p ? `<img src="${imgs.p}" style="width:100%;height:100%;">` : ''}</div>
             </div>
 
+            <div class="section-bar">REGISTRATION DETAILS</div>
+            <table class="p-table">
+                <tr><td class="sh">Registration No</td><td>${d['Registration No'] || ''}</td><td class="sh">APAAR ID</td><td>${d["APAAR ID"] || ''}</td></tr>
+                </table>
             <div class="section-bar">PERSONAL DETAILS</div>
             <table class="p-table">
                 <tr><td class="sh">Student Name</td><td>${d['Name of Student'] || ''}</td><td class="sh">Father's Name</td><td>${d["Father's Name"] || ''}</td></tr>
