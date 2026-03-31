@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admission Portal - IQRA</title>
+    <title>Admission Portal - SPS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -48,8 +48,8 @@
 
 <div class="box">
     <div class="header-main">
-        <h2 style="margin:0; color:var(--p);">IQRA PUBLIC SCHOOL</h2>
-        <small>Mathurapur, Barsoi, Katihar | Session 2026-27</small>
+        <h2 style="margin:0; color:var(--p);">SAGAR PUBLIC SCHOOL</h2>
+        <small>Quazitola Chowk, Barsoi, Katihar | Session 2026-27</small>
     </div>
     
     <form id="admissionForm">
@@ -147,9 +147,9 @@
         
         printDiv.innerHTML = `
             <div class="p-head">
-                <h2 style="margin:0; color:#b71c1c;">IQRA PUBLIC SCHOOL</h2>
+                <h2 style="margin:0; color:#b71c1c;">SAGAR PUBLIC SCHOOL</h2>
                 <h4 style="margin:5px 0;">Session : 2026-27</h4>
-                <h3 style="margin:0;">IQRA PUBLIC SCHOOL</h3>
+                <h3 style="margin:0;">SAGAR PUBLIC SCHOOL</h3>
                 <p style="font-weight:bold; margin:5px 0;">Application Form for Admission</p>
             </div>
 
@@ -167,6 +167,8 @@
             <table class="p-table">
                 <tr><td class="sh">Student Name</td><td>${d['Name of Student'] || ''}</td><td class="sh">Father's Name</td><td>${d["Father's Name"] || ''}</td></tr>
                 <tr><td class="sh">Mother's Name</td><td>${d["Mother's Name"] || ''}</td><td class="sh">Date of Birth</td><td>${d["Date of Birth"] || ''}</td></tr>
+                <tr><td class="sh">Mother's Name</td><td>${d["Guardian's Name"] || ''}</td></tr>
+                <tr><td class="sh">Nationality</td><td>${d["Nationality"] || ''}</td><td class="sh">Blood Group</td><td>${d["Blood Group"] || ''}</td></tr>
                 <tr><td class="sh">Caste</td><td>${d["Caste"] || ''}</td><td class="sh">Category</td><td>${d["Category"] || ''}</td></tr>
                 <tr><td class="sh">Gender</td><td>${d["Gender"] || ''}</td><td class="sh">Aadhaar Number</td><td colspan="3">${d["Aadhaar Number"] || ''}</td></tr>
             </table>
@@ -174,17 +176,20 @@
             <div class="section-bar">CONTACT & ADDRESS</div>
             <table class="p-table">
                 <tr><td class="sh">Mobile Number</td><td>${d["Mobile Number"] || ''}</td><td class="sh">Residence</td><td>${d["Residence"] || ''}</td></tr>
+                <tr><td class="sh">Temporary Residence</td><td>${d["Temporary Residence"] || ''}</td></tr>
             </table>
 
             <div class="section-bar">ACADEMIC DETAILS</div>
             <table class="p-table">
                 <tr><td class="sh">Previous School</td><td colspan="3">${d["Name & Place of Previous School"] || ''}</td></tr>
+                <tr><td class="sh">UDISE Code</td><td>${d["UDISE Code"] || ''}</td></tr>
                 <tr><td class="sh">Reading Class</td><td>${d["Class in which reading"] || ''}</td><td class="sh">TC No</td><td>${d["T.C No."] || ''}</td></tr>
                 <tr><td class="sh">TC Date</td><td>${d["Date of T.C"] || ''}</td><td class="sh">Admitted Class</td><td>${d["Class in which admitted"] || ''}</td></tr>
             </table>
 
             <div class="section-bar">BANK DETAILS</div>
             <table class="p-table">
+                <tr><td class="sh">APL/BPL No</td><td colspan="3">${d["APL/BPL No"] || ''}</td></tr>
                 <tr><td class="sh">Account Holder</td><td>${d["Account Holder's Name"] || ''}</td><td class="sh">Bank Name</td><td>${d["Bank Name"] || ''}</td></tr>
                 <tr><td class="sh">Account No</td><td>${d["Bank Account Number"] || ''}</td><td class="sh">IFSC Code</td><td>${d["IFSC"] || ''}</td></tr>
             </table>
