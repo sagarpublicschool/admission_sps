@@ -35,13 +35,15 @@
 
         /* Print formatting fix */
         @media print {
-            @page { size: A4; margin: 0; }
-            body { background: white; }
-            body * { visibility: hidden; }
-            #printArea, #printArea * { visibility: visible; }
-            #printArea { position: absolute; left: 0; top: 0; width: 210mm; border: none; margin: 0; padding: 10mm; }
-            #mBtns, .box { display: none !important; }
-        }
+    @page { size: A4; margin: 0; } /* Page margin zero kiya */
+    .a4-card { 
+        margin: 0; 
+        border: none; 
+        width: 100%; 
+        height: 100%;
+        zoom: 95%; /* Pura content 5% chhota kiya taaki sign niche fit ho jaye */
+    }
+}
     </style>
 </head>
 <body>
