@@ -39,7 +39,7 @@
             <h2 style="margin:0; color:var(--p);">IPS Student Records</h2>
             <div class="total-st" id="totalCount">Total Students: 0</div>
         </div>
-        <input type="text" class="search-in" id="searchInp" placeholder="Naam ya Class se search karein..." onkeyup="filterNow()">
+        <input type="text" class="search-in" id="searchInp" placeholder="Naam ya Class se search karein..." oninput="filterNow()">
     </div>
     <div style="overflow-x:auto;">
         <table class="data-table">
@@ -72,7 +72,6 @@
     const scriptURL = 'https://script.google.com/macros/s/AKfycbw0dGEgdWVuTyFBzckHE6ACFFi8lyuNAQF7ZMVPeCEFQ0NHZHrbQFfNqx2jISKLDA9k/exec';
     let rawData = [];
 
-    // Drive URL fix karne ka function
     function fixDriveUrl(url) {
         if (!url) return "";
         if (url.includes("drive.google.com")) {
@@ -101,13 +100,15 @@
         document.getElementById('totalCount').innerText = `Total Students: ${data.length}`;
         tb.innerHTML = "";
         data.forEach((d, i) => {
+            // Finding the actual index in rawData for correctly mapping to 'VIEW' button
+            const originalIndex = rawData.indexOf(d);
             tb.innerHTML += `<tr>
                 <td>${d['Application No'] || 'N/A'}</td>
                 <td>${d['Serial No. of Admission'] || ''}</td>
                 <td>${d['Name of Student'] || ''}</td>
                 <td>${d["Father's Name"] || ''}</td>
                 <td>${d["Class in which admitted"] || ''}</td>
-                <td><button class="btn-view" onclick="renderView(${i})">VIEW</button></td>
+                <td><button class="btn-view" onclick="renderView(${originalIndex})">VIEW</button></td>
             </tr>`;
         });
     }
@@ -115,8 +116,9 @@
     function filterNow() {
         let v = document.getElementById('searchInp').value.toLowerCase();
         let f = rawData.filter(d => 
-            (d['Name of Student'] || "").toLowerCase().includes(v) || 
-            (d["Class in which admitted"] || "").toLowerCase().includes(v)
+            (String(d['Name of Student'] || "")).toLowerCase().includes(v) || 
+            (String(d["Class in which admitted"] || "")).toLowerCase().includes(v) ||
+            (String(d["Father's Name"] || "")).toLowerCase().includes(v)
         );
         showTable(f);
     }
@@ -125,11 +127,10 @@
         const d = rawData[index];
         const printDiv = document.getElementById('printArea');
         
-        // Image URLs fix karein
         const pImg = fixDriveUrl(d['Photo of Student'] || d.photoData);
         const sImg = fixDriveUrl(d['Signature'] || d.sigData);
         
-        // Date formatting: Jaisa sheet mein hai waisa hi (treat as string)
+        // Handling Date as Plain Text (directly from sheet column)
         const dob = String(d["Date of Birth"] || "");
         const tcDate = String(d["Date of T.C"] || "");
         const admDate = String(d["Date of Admission"] || "");
