@@ -17,17 +17,25 @@
         .btn-view { background: #b71c1c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
-        .a4-card { background: white; width: 210mm; min-height: 297mm; padding: 12mm; margin: 20px auto; box-sizing: border-box; border: 1px solid #000; }
-        .p-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-        .p-table td { border: 1px solid #ccc; padding: 7px 10px; font-size: 12.5px; }
+        /* A4 Container Setup */
+        .a4-card { background: white; width: 210mm; min-height: 290mm; padding: 10mm; margin: 20px auto; box-sizing: border-box; border: 1px solid #000; position: relative; }
+        .p-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .p-table td { border: 1px solid #ccc; padding: 6px 10px; font-size: 12px; }
         .sh { background: #f0f0f0; font-weight: bold; width: 22%; }
-        .section-bar { background: #e9e9e9; font-weight: bold; padding: 5px 10px; font-size: 13px; margin: 15px 0 5px 0; border: 1px solid #333; }
+        .section-bar { background: #e9e9e9; font-weight: bold; padding: 4px 10px; font-size: 12.5px; margin: 10px 0 5px 0; border: 1px solid #333; }
 
         @media print {
-            body * { visibility: hidden; }
-            #printArea, #printArea * { visibility: visible; }
-            #printArea { position: absolute; left: 0; top: 0; width: 210mm; border: none; padding: 10mm; margin: 0; }
-            #mBtns, .dash-box { display: none !important; }
+            @page { size: A4; margin: 0; }
+            body { background: none; padding: 0; }
+            .dash-box, #mBtns { display: none !important; }
+            #modal { position: static; display: block; background: none; }
+            .a4-card { 
+                margin: 0; 
+                border: none; 
+                width: 100%; 
+                height: 100%;
+                zoom: 95%; /* Adjust zoom to fit signatures */
+            }
         }
     </style>
 </head>
@@ -121,33 +129,31 @@
     function renderView(index) {
         const d = rawData[index];
         const printDiv = document.getElementById('printArea');
-        
         const pImg = fixDriveUrl(d['Photo of Student'] || d.photoData);
         const sImg = fixDriveUrl(d['Signature'] || d.sigData);
         
-        // DATE AS PLAIN TEXT (No Conversion)
-        // Agar date sheet mein "2026-03-31" hai to wahi dikhega.
-        const dob = String(d["Date of Birth"] || "");
-        const tcDate = String(d["Date of T.C"] || "");
-        const admDate = String(d["Date of Admission"] || "");
+        // FIX: Treat dates strictly as text from the source
+        const dob = String(d["Date of Birth"] || "").split('T')[0];
+        const tcDate = String(d["Date of T.C"] || "").split('T')[0];
+        const admDate = String(d["Date of Admission"] || "").split('T')[0];
 
         printDiv.innerHTML = `
             <div style="text-align: center; position: relative; padding-bottom: 5px; margin-bottom: 10px; border-bottom: 2px solid #000;">
-                <img src="https://drive.google.com/thumbnail?id=1pWEjzAU2G4AUC0RhIJ8cMHdLtLvQ4YJe&sz=w300" style="position: absolute; left: 0; top: 0; width: 95px;">
-                <h1 style="color: #b71c1c; font-size: 35px; font-weight: bold; margin: 0;">SAGAR PUBLIC SCHOOL</h1>
-                <div style="color: #3e7d58; font-size: 14px; font-weight: bold;">QUAZITOLA, BARSOI, KATIHAR, BIHAR 855102</div>
-                <div style="font-size: 11px; font-weight: bold;">Session : 2026-27 | RTE Reg. No: 21211472023218114225<br>UDISE Code : 10101122703</div>
-                <div style="text-align:center; background:#ffff00; padding:5px; border:1px solid #000; font-weight:bold; margin-top:10px; text-transform: uppercase; font-size: 14px;">☀️ Application Form for Admission ☀️</div>
+                <img src="https://drive.google.com/thumbnail?id=1pWEjzAU2G4AUC0RhIJ8cMHdLtLvQ4YJe&sz=w300" style="position: absolute; left: 0; top: 0; width: 90px;">
+                <h1 style="color: #b71c1c; font-size: 32px; font-weight: bold; margin: 0;">SAGAR PUBLIC SCHOOL</h1>
+                <div style="color: #3e7d58; font-size: 13px; font-weight: bold;">QUAZITOLA, BARSOI, KATIHAR, BIHAR 855102</div>
+                <div style="font-size: 10px; font-weight: bold;">Session : 2026-27 | RTE Reg. No: 21211472023218114225<br>UDISE Code : 10101122703</div>
+                <div style="text-align:center; background:#ffff00; padding:4px; border:1px solid #000; font-weight:bold; margin-top:8px; text-transform: uppercase; font-size: 13px;">☀️ Application Form for Admission ☀️</div>
             </div>
 
-            <div style="display:flex; justify-content:space-between;">
-                <div style="font-size:12px; line-height:1.8;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <div style="font-size:11px; line-height:1.6;">
                     <b>Application Number:</b> ${d['Application No'] || 'Pending...'}<br>
-                    <b>Serial No of Admission:</b> ${d['Serial No. of Admission'] || 'Pending...'}<br>
+                    <b>Serial No of Admission:</b> ${d['Serial No. of Admission'] || ''}<br>
                     <b>Date of Admission:</b> ${admDate}
                 </div>
-                <div id="qrPrint" style="margin-top:5px;"></div>
-                <div style="width:100px; height:120px; border:1px solid #000;">
+                <div id="qrPrint" style="margin-top:2px;"></div>
+                <div style="width:90px; height:110px; border:1px solid #000;">
                     ${pImg ? `<img src="${pImg}" style="width:100%;height:100%;object-fit:cover;">` : ''}
                 </div>
             </div>
@@ -188,23 +194,21 @@
                 <tr><td class="sh">Account No</td><td>${d["Bank Account Number"] || ''}</td><td class="sh">IFSC Code</td><td>${d["IFSC"] || ''}</td></tr>
             </table>
 
-            <div style="font-size:10.5px; margin: 15px 0; line-height:1.4; border-top:1px solid #eee; padding-top:10px;">
-                <b>DECLARATION:</b><br>
-                1. I solemnly undertake to accept and abide by the rules of the school.<br>
-                2. I hereby affirm that the entries made by me above are true to the best of my knowledge.
+            <div style="font-size:9.5px; margin: 10px 0; line-height:1.3;">
+                <b>DECLARATION:</b> I solemnly undertake to accept and abide by the rules of the school. I hereby affirm that the entries made above are true to the best of my knowledge.
             </div>
 
-            <div style="margin-top:40px; display:flex; justify-content:space-between; font-size:12px; text-align:center;">
-                <div>${sImg ? `<img src="${sImg}" style="width:100px; height:35px; object-fit:contain;">` : ''}<br>_________________<br>Student Signature</div>
-                <div><br><br>_________________<br>Guardian's Signature</div>
-                <div><br><br>_________________<br>Principal's Signature</div>
+            <div style="margin-top:25px; display:flex; justify-content:space-between; font-size:11px; text-align:center;">
+                <div style="width:120px;">${sImg ? `<img src="${sImg}" style="width:100%; height:35px; object-fit:contain;">` : '<br><br>'}_________________<br>Student Signature</div>
+                <div style="width:120px;"><br><br>_________________<br>Guardian's Signature</div>
+                <div style="width:120px;"><br><br>_________________<br>Principal's Signature</div>
             </div>
         `;
 
         document.getElementById('modal').style.display = 'block';
         if(d['Application No']) {
             document.getElementById("qrPrint").innerHTML = "";
-            new QRCode(document.getElementById("qrPrint"), { text: d['Application No'], width: 60, height: 60 });
+            new QRCode(document.getElementById("qrPrint"), { text: d['Application No'], width: 50, height: 50 });
         }
     }
 </script>
