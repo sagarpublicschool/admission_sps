@@ -76,11 +76,8 @@
         if (!url) return "";
         if (url.includes("drive.google.com")) {
             let id = "";
-            if (url.includes("id=")) {
-                id = url.split("id=")[1].split("&")[0];
-            } else if (url.includes("/d/")) {
-                id = url.split("/d/")[1].split("/")[0];
-            }
+            if (url.includes("id=")) id = url.split("id=")[1].split("&")[0];
+            else if (url.includes("/d/")) id = url.split("/d/")[1].split("/")[0];
             return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w500` : url;
         }
         return url;
@@ -99,8 +96,7 @@
         const tb = document.getElementById('tableData');
         document.getElementById('totalCount').innerText = `Total Students: ${data.length}`;
         tb.innerHTML = "";
-        data.forEach((d, i) => {
-            // Finding the actual index in rawData for correctly mapping to 'VIEW' button
+        data.forEach((d) => {
             const originalIndex = rawData.indexOf(d);
             tb.innerHTML += `<tr>
                 <td>${d['Application No'] || 'N/A'}</td>
@@ -117,8 +113,7 @@
         let v = document.getElementById('searchInp').value.toLowerCase();
         let f = rawData.filter(d => 
             (String(d['Name of Student'] || "")).toLowerCase().includes(v) || 
-            (String(d["Class in which admitted"] || "")).toLowerCase().includes(v) ||
-            (String(d["Father's Name"] || "")).toLowerCase().includes(v)
+            (String(d["Class in which admitted"] || "")).toLowerCase().includes(v)
         );
         showTable(f);
     }
@@ -130,7 +125,8 @@
         const pImg = fixDriveUrl(d['Photo of Student'] || d.photoData);
         const sImg = fixDriveUrl(d['Signature'] || d.sigData);
         
-        // Handling Date as Plain Text (directly from sheet column)
+        // DATE AS PLAIN TEXT (No Conversion)
+        // Agar date sheet mein "2026-03-31" hai to wahi dikhega.
         const dob = String(d["Date of Birth"] || "");
         const tcDate = String(d["Date of T.C"] || "");
         const admDate = String(d["Date of Admission"] || "");
