@@ -71,7 +71,7 @@
 <div id="modal">
     <div id="printArea" class="a4-card"></div>
     <div id="mBtns" style="text-align: center; padding: 20px;">
-        <button onclick="window.print()" style="padding:12px 30px; background:var(--p); color:white; border:none; cursor:pointer; font-weight:bold; border-radius:5px;">PRINT / SAVE PDF</button>
+        <button onclick="if(window.AndroidPrint){ AndroidPrint.triggerPrint(); } else { window.print(); }" style="padding:12px 30px; background:var(--p); color:white; border:none; cursor:pointer; font-weight:bold; border-radius:5px;">PRINT / SAVE PDF</button>
         <button onclick="document.getElementById('modal').style.display='none'" style="padding:12px 30px; background:#666; color:white; border:none; margin-left:10px; cursor:pointer; border-radius:5px;">BACK</button>
     </div>
 </div>
