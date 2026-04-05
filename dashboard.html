@@ -2,27 +2,26 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPS Student Records - Dashboard</title>
+    <title>Dashboard - IPS Student Records</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root { --p: #1a5d1a; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 10px; }
         
         /* Dashboard Styles */
-        .dash-container { max-width: 1100px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
-        .dash-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--p); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-        .stats-badge { background: var(--p); color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; }
-        .search-box { padding: 10px; border: 1px solid #ccc; border-radius: 20px; width: 250px; outline: none; }
+        .dash-box { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 5px solid var(--p); }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .total-badge { background: var(--p); color: white; padding: 8px 15px; border-radius: 50px; font-weight: bold; font-size: 14px; }
+        .search-input { padding: 10px 15px; border: 1px solid #ccc; border-radius: 25px; width: 300px; outline: none; }
         
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .data-table thead { background: var(--p); color: white; }
-        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        .view-btn { background: #b71c1c; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        
-        /* Modal & Print Styles (Copied from your code) */
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px 0; }
-        .a4-card { background: white; width: 210mm; min-height: 297mm; padding: 12mm; margin: auto; box-sizing: border-box; border: 1px solid #000; }
+        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; }
+        .view-btn { background: #b71c1c; color: white; border: none; padding: 6px 15px; border-radius: 3px; cursor: pointer; font-weight: bold; }
+
+        /* Modal Print Styles - Exactly like your apply page */
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
+        .a4-card { background: white; width: 210mm; min-height: 297mm; padding: 12mm; margin: 20px auto; box-sizing: border-box; border: 1px solid #000; }
         .p-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         .p-table td { border: 1px solid #ccc; padding: 7px 10px; font-size: 12.5px; }
         .sh { background: #f0f0f0; font-weight: bold; width: 22%; }
@@ -31,24 +30,24 @@
         @media print {
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
-            #printArea { position: absolute; left: 0; top: 0; width: 210mm; border: none; margin: 0; padding: 10mm; }
-            #mBtns, .dash-container { display: none !important; }
+            #printArea { position: absolute; left: 0; top: 0; width: 210mm; border: none; padding: 10mm; }
+            #mBtns { display: none !important; }
         }
     </style>
 </head>
 <body>
 
-<div class="dash-container">
+<div class="dash-box">
     <div class="dash-header">
         <div>
             <h2 style="margin:0; color:var(--p);">IPS Student Records</h2>
-            <div class="stats-badge" id="totalCount">Total Students: Loading...</div>
+            <div class="total-badge" id="totalCount">Total Students: 0</div>
         </div>
-        <input type="text" class="search-box" id="searchInput" placeholder="Naam ya Class se search karein..." onkeyup="filterTable()">
+        <input type="text" class="search-input" id="searchBox" placeholder="Naam ya Class se search karein..." onkeyup="doSearch()">
     </div>
 
-    <div style="overflow-x: auto;">
-        <table class="data-table" id="studentTable">
+    <div style="overflow-x:auto;">
+        <table class="data-table">
             <thead>
                 <tr>
                     <th>App No</th>
@@ -60,7 +59,7 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="6" style="text-align:center;">Loading Data...</td></tr>
+                <tr><td colspan="6" style="text-align:center;">Data loading...</td></tr>
             </tbody>
         </table>
     </div>
@@ -68,87 +67,99 @@
 
 <div id="modal">
     <div id="printArea" class="a4-card"></div>
-    <div id="mBtns" style="text-align: center; padding: 25px;">
+    <div id="mBtns" style="text-align: center; padding: 20px;">
         <button onclick="window.print()" style="padding:12px 30px; background:var(--p); color:white; border:none; cursor:pointer; font-weight:bold; border-radius:5px;">PRINT / SAVE PDF</button>
-        <button onclick="document.getElementById('modal').style.display='none'" style="padding:12px 30px; background:#666; color:white; border:none; margin-left:10px; cursor:pointer; border-radius:4px;">BACK</button>
+        <button onclick="document.getElementById('modal').style.display='none'" style="padding:12px 30px; background:#666; color:white; border:none; margin-left:10px; cursor:pointer; border-radius:5px;">BACK</button>
     </div>
 </div>
 
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbw0dGEgdWVuTyFBzckHE6ACFFi8lyuNAQF7ZMVPeCEFQ0NHZHrbQFfNqx2jISKLDA9k/exec';
-    let allData = [];
+    let masterData = [];
 
-    // 1. Data Fetch Karne Ka Logic
-    window.onload = async () => {
-        try {
-            const res = await fetch(scriptURL);
-            allData = await res.json();
-            renderTable(allData);
-        } catch (e) {
-            console.error("Error:", e);
-            document.getElementById('tableBody').innerHTML = "<tr><td colspan='6'>Data load nahi ho saka.</td></tr>";
-        }
+    window.onload = () => {
+        fetch(scriptURL)
+            .then(res => res.json())
+            .then(data => {
+                masterData = data;
+                renderTable(data);
+            })
+            .catch(err => {
+                console.log(err);
+                document.getElementById('tableBody').innerHTML = "<tr><td colspan='6'>Error loading data!</td></tr>";
+            });
     };
 
-    // 2. Table Render Karne Ka Logic
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         document.getElementById('totalCount').innerText = `Total Students: ${data.length}`;
         tbody.innerHTML = "";
 
         data.forEach((row, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${row['Application No'] || 'N/A'}</td>
-                <td>${row['Serial No. of Admission'] || 'N/A'}</td>
-                <td>${row['Name of Student'] || row['Student Name'] || 'N/A'}</td>
-                <td>${row["Father's Name"] || 'N/A'}</td>
-                <td>${row["Class in which admitted"] || row['Class'] || 'N/A'}</td>
-                <td><button class="view-btn" onclick="viewStudent(${index})">VIEW</button></td>
-            `;
-            tbody.appendChild(tr);
+            // Aapke sheet ke headers ke hisaab se mapping
+            let name = row['Name of Student'] || row['Student Name'] || "N/A";
+            let fName = row["Father's Name"] || "N/A";
+            let cls = row["Class in which admitted"] || row["Class"] || "N/A";
+            let appNo = row["Application No"] || "N/A";
+            let admNo = row["Serial No. of Admission"] || "";
+
+            let tr = `<tr>
+                <td>${appNo}</td>
+                <td>${admNo}</td>
+                <td>${name}</td>
+                <td>${fName}</td>
+                <td>${cls}</td>
+                <td><button class="view-btn" onclick="openFullView(${index})">VIEW</button></td>
+            </tr>`;
+            tbody.innerHTML += tr;
         });
     }
 
-    // 3. Search Filter
-    function filterTable() {
-        const val = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = allData.filter(item => 
-            (item['Name of Student'] && item['Name of Student'].toLowerCase().includes(val)) ||
-            (item['Class in which admitted'] && item['Class in which admitted'].toLowerCase().includes(val))
-        );
+    function doSearch() {
+        let val = document.getElementById('searchBox').value.toLowerCase();
+        let filtered = masterData.filter(item => {
+            let name = (item['Name of Student'] || item['Student Name'] || "").toLowerCase();
+            let cls = (item["Class in which admitted"] || item["Class"] || "").toLowerCase();
+            return name.includes(val) || cls.includes(val);
+        });
         renderTable(filtered);
     }
 
-    // 4. View Function (Wahi same printout render karega)
-    function viewStudent(index) {
-        const d = allData[index];
+    function openFullView(idx) {
+        const d = masterData[idx];
         const printDiv = document.getElementById('printArea');
         
-        // Image handling (using stored base64 or placeholders)
-        const studentImg = d.photoData || "";
-        const sigImg = d.sigData || "";
-
+        // Exact same design from your apply page
         printDiv.innerHTML = `
             <div style="text-align: center; position: relative; padding-bottom: 5px; margin-bottom: 10px; border-bottom: 2px solid #000;">
-                <img src="https://drive.google.com/thumbnail?id=1pWEjzAU2G4AUC0RhIJ8cMHdLtLvQ4YJe&sz=w300" style="position: absolute; left: 0; top: 0; width: 95px;">
-                <h1 style="color: #b71c1c; font-size: 35px; margin: 0;">SAGAR PUBLIC SCHOOL</h1>
-                <div style="color: #3e7d58; font-weight: bold;">QUAZITOLA, BARSOI, KATIHAR, BIHAR 855102</div>
-                <div style="font-size: 11px;">Session : 2026-27 | UDISE: 10101122703</div>
-                <div style="text-align:center; background:#ffff00; padding:5px; border:1px solid #000; font-weight:bold; margin-top:10px;">
+                <img src="https://drive.google.com/thumbnail?id=1pWEjzAU2G4AUC0RhIJ8cMHdLtLvQ4YJe&sz=w300" 
+                     style="position: absolute; left: 0; top: 0; width: 95px; height: auto;">
+                
+                <h1 style="color: #b71c1c; font-size: 35px; font-weight: bold; margin: 0; font-family: Arial, sans-serif;">
+                    SAGAR PUBLIC SCHOOL
+                </h1>
+                
+                <div style="color: #3e7d58; font-size: 14px; font-weight: bold; margin: 2px 0;">
+                    QUAZITOLA, BARSOI, KATIHAR, BIHAR 855102
+                </div>
+                <div style="font-size: 11px; font-weight: bold; color: #000;">
+                    Session : 2026-27 | UDISE Code : 10101122703
+                </div>
+
+                <div style="text-align:center; background:#ffff00; padding:5px; border:1px solid #000; font-weight:bold; margin-top:10px; text-transform: uppercase; font-size: 14px;">
                    ☀️ Application Form for Admission ☀️
                 </div>
             </div>
 
-            <div style="display:flex; justify-content:space-between;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div style="font-size:12px; line-height:1.8;">
                     <b>Application Number:</b> ${d['Application No'] || 'N/A'}<br>
                     <b>Serial No of Admission:</b> ${d['Serial No. of Admission'] || 'N/A'}<br>
                     <b>Date of Admission:</b> ${d['Date of Admission'] || 'N/A'}
                 </div>
-                <div id="qrDash" style="margin-top:5px;"></div>
-                <div style="width:100px; height:120px; border:1px solid #000;">
-                    ${studentImg ? `<img src="${studentImg}" style="width:100%;height:100%;">` : 'PHOTO'}
+                <div id="qrPlace"></div>
+                <div style="width:100px; height:120px; border:1px solid #000; overflow:hidden;">
+                    ${(d.photoData || d['Photo of Student']) ? `<img src="${d.photoData || d['Photo of Student']}" style="width:100%;height:100%;object-fit:cover;">` : '<div style="text-align:center;padding-top:40px;font-size:10px;">PHOTO</div>'}
                 </div>
             </div>
 
@@ -159,26 +170,34 @@
                 <tr><td class="sh">Gender</td><td>${d["Gender"] || ''}</td><td class="sh">Aadhaar Number</td><td>${d["Aadhaar Number"] || ''}</td></tr>
             </table>
 
-            <div class="section-bar">ACADEMIC DETAILS</div>
+            <div class="section-bar">CONTACT & ADDRESS</div>
             <table class="p-table">
-                <tr><td class="sh">Previous School</td><td colspan="3">${d["Name & Place of Previous School"] || ''}</td></tr>
-                <tr><td class="sh">Admitted Class</td><td>${d["Class in which admitted"] || ''}</td><td class="sh">Mobile</td><td>${d["Mobile Number"] || ''}</td></tr>
+                <tr><td class="sh">Mobile Number</td><td>${d["Mobile Number"] || ''}</td><td class="sh">Residence</td><td>${d["Residence"] || ''}</td></tr>
             </table>
 
-            <div style="margin-top:60px; display:flex; justify-content:space-between; font-size:12px; text-align:center;">
-                <div>${sigImg ? `<img src="${sigImg}" style="width:100px; height:35px;">` : ''}<br>_________________<br>Student Signature</div>
-                <div><br>_________________<br>Guardian's Signature</div>
-                <div><br>_________________<br>Principal's Signature</div>
+            <div class="section-bar">ACADEMIC DETAILS</div>
+            <table class="p-table">
+                <tr><td class="sh">Admitted Class</td><td>${d["Class in which admitted"] || ''}</td><td class="sh">Previous School</td><td>${d["Name & Place of Previous School"] || ''}</td></tr>
+            </table>
+
+            <div style="margin-top:50px; display:flex; justify-content:space-between; font-size:12px; text-align:center;">
+                <div>
+                    ${(d.sigData || d['Signature']) ? `<img src="${d.sigData || d['Signature']}" style="width:100px; height:35px; object-fit:contain;">` : ''}
+                    <br>_________________<br>Student Signature
+                </div>
+                <div><br><br>_________________<br>Guardian's Signature</div>
+                <div><br><br>_________________<br>Principal's Signature</div>
             </div>
         `;
 
         document.getElementById('modal').style.display = 'block';
         
-        // Generate QR
-        if(d['Application No']) {
-            new QRCode(document.getElementById("qrDash"), { text: d['Application No'], width: 60, height: 60 });
+        // QR Code generate karein
+        if(d['Application No'] && d['Application No'] !== 'N/A') {
+            new QRCode(document.getElementById("qrPlace"), { text: d['Application No'], width: 60, height: 60 });
         }
     }
 </script>
+
 </body>
 </html>
