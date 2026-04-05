@@ -25,20 +25,27 @@
         .btn-main { background: var(--p); color: white; padding: 15px; border: none; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-top: 20px; }
         
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px 0; }
-        .a4-card { background: white; width: 210mm; min-height: 297mm; padding: 10mm; margin: auto; box-sizing: border-box; border: 1px solid #000; }
+        
+        /* A4 Card Adjustment for Single Page */
+        .a4-card { background: white; width: 210mm; min-height: 290mm; padding: 10mm; margin: auto; box-sizing: border-box; border: 1px solid #000; }
         
         .p-head { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; }
-        .p-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; } /* Thoda margin kam kiya */
-        .p-table td { border: 1px solid #ccc; padding: 6px 10px; font-size: 12px; } /* Padding thodi kam ki */
+        .p-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .p-table td { border: 1px solid #ccc; padding: 5px 10px; font-size: 12px; }
         .sh { background: #f0f0f0; font-weight: bold; width: 22%; }
-        .section-bar { background: #e9e9e9; font-weight: bold; padding: 5px 10px; font-size: 13px; margin: 12px 0 4px 0; border: 1px solid #333; }
+        .section-bar { background: #e9e9e9; font-weight: bold; padding: 4px 10px; font-size: 12.5px; margin: 8px 0 4px 0; border: 1px solid #333; }
 
+        /* Print formatting fix for Single Page */
         @media print {
-            @page { size: A4; margin: 5mm; } 
-            body { background: white; margin: 0; padding: 0; }
-            body * { visibility: hidden; }
-            #printArea, #printArea * { visibility: visible; }
-            #printArea { position: absolute; left: 0; top: 0; width: 200mm; border: none; margin: 0; padding: 5mm; }
+            @page { size: A4; margin: 0; }
+            body { padding: 0; }
+            .a4-card { 
+                margin: 0; 
+                border: none; 
+                width: 100%; 
+                height: 100%;
+                zoom: 94%; /* Zoom slightly reduced to fit signatures */
+            }
             #mBtns, .box { display: none !important; }
         }
     </style>
@@ -101,16 +108,7 @@
             let headerName = h.trim();
             if(headerName && !skip.includes(headerName)) {
                 if(headerName.toLowerCase() === "gender") {
-                    div.innerHTML += `
-                        <div class="field">
-                            <label>${count}. ${headerName}</label>
-                            <select name="${headerName}" style="padding: 9px; border: 1px solid #ccc; border-radius: 3px; font-size: 14px;">
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>`;
+                    div.innerHTML += `<div class="field"><label>${count}. ${headerName}</label><select name="${headerName}" style="padding: 9px; border: 1px solid #ccc; border-radius: 3px; font-size: 14px;"><option value="">Select Gender</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>`;
                 } 
                 else if(headerName.includes('Date') && !headerName.includes('No')) {
                     div.innerHTML += `<div class="field"><label>${count}. ${headerName}</label><input type="date" name="${headerName}"></div>`;
@@ -141,15 +139,15 @@
         const d = Object.fromEntries(new FormData(document.getElementById('admissionForm')));
         
         printDiv.innerHTML = `
-            <div style="text-align: center; position: relative; padding-bottom: 5px; margin-bottom: 5px; border-bottom: 2px solid #000;">
+            <div style="text-align: center; position: relative; padding-bottom: 5px; margin-bottom: 8px; border-bottom: 2px solid #000;">
                 <img src="https://drive.google.com/thumbnail?id=1pWEjzAU2G4AUC0RhIJ8cMHdLtLvQ4YJe&sz=w300" 
                      style="position: absolute; left: 0; top: 0; width: 90px; height: auto;">
                 
-                <h1 style="color: #b71c1c; font-size: 35px; font-weight: bold; margin: 0; font-family: Arial, sans-serif;">
+                <h1 style="color: #b71c1c; font-size: 32px; font-weight: bold; margin: 0; font-family: Arial, sans-serif;">
                     SAGAR PUBLIC SCHOOL
                 </h1>
                 
-                <div style="color: #3e7d58; font-size: 14px; font-weight: bold; margin: 2px 0;">
+                <div style="color: #3e7d58; font-size: 13px; font-weight: bold; margin: 2px 0;">
                     QUAZITOLA, BARSOI, KATIHAR, BIHAR 855102
                 </div>
                 <div style="font-size: 11px; font-weight: bold; line-height: 1.3; color: #000;">
@@ -157,26 +155,25 @@
                     UDISE Code : 10101122703 | Email: sagarpublicschool2023@gmail.com
                 </div>
 
-                <div style="text-align:center; background:#ffff00; padding:5px; border:1px solid #000; font-weight:bold; margin-top:10px; text-transform: uppercase; font-size: 14px;">
+                <div style="text-align:center; background:#ffff00; padding:4px; border:1px solid #000; font-weight:bold; margin-top:8px; text-transform: uppercase; font-size: 13px;">
                    ☀️ Application Form for Admission ☀️
                 </div>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div style="font-size:12px; line-height:1.8;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:5px;">
+                <div style="font-size:11px; line-height:1.7;">
                     <b>Application Number:</b> ${ex.appNo || 'Pending...'}<br>
                     <b>Serial No of Admission:</b> ${ex.sNo || 'Pending...'}<br>
                     <b>Date of Admission:</b> ${new Date().toLocaleDateString('en-GB')}
                 </div>
-                <div id="qrPrint" style="margin-top:5px;"></div>
-                <div style="width:100px; height:120px; border:1px solid #000;">${imgs.p ? `<img src="${imgs.p}" style="width:100%;height:100%;">` : ''}</div>
+                <div id="qrPrint" style="margin-top:2px;"></div>
+                <div style="width:90px; height:110px; border:1px solid #000;">${imgs.p ? `<img src="${imgs.p}" style="width:100%;height:100%;">` : ''}</div>
             </div>
 
             <div class="section-bar">REGISTRATION DETAILS</div>
             <table class="p-table">
                 <tr><td class="sh">Registration No</td><td>${d['Registration No'] || ''}</td><td class="sh">APAAR ID</td><td>${d["APAAR ID"] || ''}</td></tr>
-            </table>
-
+                </table>
             <div class="section-bar">PERSONAL DETAILS</div>
             <table class="p-table">
                 <tr><td class="sh">Student Name</td><td>${d['Name of Student'] || ''}</td><td class="sh">Father's Name</td><td>${d["Father's Name"] || ''}</td></tr>
@@ -190,18 +187,58 @@
             <div class="section-bar">CONTACT & ADDRESS</div>
             <table class="p-table">
                 <tr><td class="sh">Mobile Number</td><td>${d["Mobile Number"] || ''}</td><td class="sh">Residence</td><td>${d["Residence"] || ''}</td></tr>
-                <tr><td class="sh">Temporary Residence</td><td colspan="3">${d["Temporary Residence"] || ''}</td></tr>
+                <tr><td class="sh">Temporary Residence</td><td>${d["Temporary Residence"] || ''}</td></tr>
             </table>
 
             <div class="section-bar">ACADEMIC DETAILS</div>
             <table class="p-table">
                 <tr><td class="sh">Previous School</td><td colspan="3">${d["Name & Place of Previous School"] || ''}</td></tr>
-                <tr><td class="sh">UDISE Code</td><td>${d["UDISE Code"] || ''}</td><td class="sh">Reading Class</td><td>${d["Class in which reading"] || ''}</td></tr>
-                <tr><td class="sh">TC No</td><td>${d["T.C No."] || ''}</td><td class="sh">TC Date</td><td>${d["Date of T.C"] || ''}</td><td class="sh">Admitted Class</td><td>${d["Class in which admitted"] || ''}</td></tr>
+                <tr><td class="sh">UDISE Code</td><td>${d["UDISE Code"] || ''}</td></tr>
+                <tr><td class="sh">Reading Class</td><td>${d["Class in which reading"] || ''}</td><td class="sh">TC No</td><td>${d["T.C No."] || ''}</td></tr>
+                <tr><td class="sh">TC Date</td><td>${d["Date of T.C"] || ''}</td><td class="sh">Admitted Class</td><td>${d["Class in which admitted"] || ''}</td></tr>
             </table>
 
             <div class="section-bar">BANK DETAILS</div>
             <table class="p-table">
                 <tr><td class="sh">APL/BPL No</td><td colspan="3">${d["APL/BPL No"] || ''}</td></tr>
                 <tr><td class="sh">Account Holder</td><td>${d["Account Holder's Name"] || ''}</td><td class="sh">Bank Name</td><td>${d["Bank Name"] || ''}</td></tr>
-                <tr><td class="sh">Account No</td><td>${d["Bank Account Number"] || ''}</td><td class="
+                <tr><td class="sh">Account No</td><td>${d["Bank Account Number"] || ''}</td><td class="sh">IFSC Code</td><td>${d["IFSC"] || ''}</td></tr>
+            </table>
+
+            <div style="font-size:10px; margin: 10px 0; line-height:1.3; border-top:1px solid #eee; padding-top:8px;">
+                <b>DECLARATION:</b><br>
+                1. I solemnly undertake to accept and abide by the rules of the school.<br>
+                2. I hereby affirm that the entries made by me above are true to the best of my knowledge.<br>
+                3. If at any time, the entries are found incorrect, the admission may be cancelled.
+            </div>
+
+            <div style="margin-top:30px; display:flex; justify-content:space-between; font-size:11px; text-align:center;">
+                <div>${imgs.s ? `<img src="${imgs.s}" style="width:100px; height:35px;">` : '<br><br>'} <br>_________________<br>Student Signature</div>
+                <div><br><br>_________________<br>Guardian's Signature</div>
+                <div><br><br>_________________<br>Principal's Signature</div>
+            </div>
+        `;
+        if(ex.appNo) {
+            document.getElementById("qrPrint").innerHTML = "";
+            new QRCode(document.getElementById("qrPrint"), { text: ex.appNo, width: 55, height: 55 });
+        }
+    }
+
+    async function sendData() {
+        const b = document.getElementById('fBtn'); b.innerText = "Saving..."; b.disabled = true;
+        const d = Object.fromEntries(new FormData(document.getElementById('admissionForm')));
+        d.photoData = imgs.p; d.sigData = imgs.s;
+        try {
+            const res = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(d) });
+            const r = await res.json();
+            if(r.status === "Success") {
+                renderPrint({appNo: r.appNo, sNo: r.sNo});
+                b.style.display = "none";
+                document.getElementById('pBtn').style.display = "inline-block";
+                Swal.fire({ icon: 'success', title: 'Success!', text: 'Data Saved Successfully!', confirmButtonColor: '#1a5d1a' });
+            }
+        } catch(e) { b.innerText = "FINAL SUBMIT"; b.disabled = false; alert("Error saving data"); }
+    }
+</script>
+</body>
+</html>
