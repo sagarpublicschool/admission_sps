@@ -25,27 +25,17 @@
         .btn-main { background: var(--p); color: white; padding: 15px; border: none; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-top: 20px; }
         
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px 0; }
-        
-        /* A4 Card Adjustment for Single Page */
         .a4-card { background: white; width: 210mm; min-height: 290mm; padding: 10mm; margin: auto; box-sizing: border-box; border: 1px solid #000; }
         
-        .p-head { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; }
         .p-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
         .p-table td { border: 1px solid #ccc; padding: 5px 10px; font-size: 12px; }
         .sh { background: #f0f0f0; font-weight: bold; width: 22%; }
         .section-bar { background: #e9e9e9; font-weight: bold; padding: 4px 10px; font-size: 12.5px; margin: 8px 0 4px 0; border: 1px solid #333; }
 
-        /* Print formatting fix for Single Page */
         @media print {
             @page { size: A4; margin: 0; }
             body { padding: 0; }
-            .a4-card { 
-                margin: 0; 
-                border: none; 
-                width: 100%; 
-                height: 100%;
-                zoom: 94%; /* Zoom slightly reduced to fit signatures */
-            }
+            .a4-card { margin: 0; border: none; width: 100%; height: 100%; zoom: 94%; }
             #mBtns, .box { display: none !important; }
         }
     </style>
@@ -93,34 +83,34 @@
     let imgs = { p: "", s: "" };
 
     window.onload = async () => {
-    try {
-        const res = await fetch(scriptURL);
-        let headers = await res.json();
-        if (Array.isArray(headers) && headers.length > 0 && typeof headers[0] === 'object') {
-            headers = Object.keys(headers[0]);
-        }
-        const div = document.getElementById('dynamicFields');
-        const skip = ["Photo of Student", "Signature", "Application No", "Serial No. of Admission", "Date of Admission"];
-        let count = 1;
-        div.innerHTML = ""; 
-        
-        headers.forEach(h => {
-            let headerName = h.trim();
-            if(headerName && !skip.includes(headerName)) {
-                if(headerName.toLowerCase() === "gender") {
-                    div.innerHTML += `<div class="field"><label>${count}. ${headerName}</label><select name="${headerName}" style="padding: 9px; border: 1px solid #ccc; border-radius: 3px; font-size: 14px;"><option value="">Select Gender</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>`;
-                } 
-                else if(headerName.includes('Date') && !headerName.includes('No')) {
-                    div.innerHTML += `<div class="field"><label>${count}. ${headerName}</label><input type="date" name="${headerName}"></div>`;
-                }
-                else {
-                    div.innerHTML += `<div class="field"><label>${count}. ${headerName}</label><input type="text" name="${headerName}"></div>`;
-                }
-                count++;
+        try {
+            const res = await fetch(scriptURL);
+            let headers = await res.json();
+            if (Array.isArray(headers) && headers.length > 0 && typeof headers[0] === 'object') {
+                headers = Object.keys(headers[0]);
             }
-        });
-    } catch (e) { console.error("Error loading headers:", e); }
-};
+            const div = document.getElementById('dynamicFields');
+            const skip = ["Photo of Student", "Signature", "Application No", "Serial No. of Admission", "Date of Admission", "Application Number"];
+            let count = 1;
+            div.innerHTML = ""; 
+            
+            headers.forEach(h => {
+                let headerName = h.trim();
+                if(headerName && !skip.includes(headerName)) {
+                    if(headerName.toLowerCase() === "gender") {
+                        div.innerHTML += `<div class="field"><label>${count}. ${headerName}</label><select name="${headerName}" style="padding: 9px; border: 1px solid #ccc; border-radius: 3px; font-size: 14px;"><option value="">Select Gender</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>`;
+                    } 
+                    else if(headerName.includes('Date') && !headerName.includes('No')) {
+                        div.innerHTML += `<div class="field"><label>${count}. ${headerName}</label><input type="date" name="${headerName}"></div>`;
+                    }
+                    else {
+                        div.innerHTML += `<div class="field"><label>${count}. ${headerName}</label><input type="text" name="${headerName}"></div>`;
+                    }
+                    count++;
+                }
+            });
+        } catch (e) { console.error("Error loading headers:", e); }
+    };
 
     function upImg(i, id) {
         const r = new FileReader();
@@ -140,24 +130,11 @@
         
         printDiv.innerHTML = `
             <div style="text-align: center; position: relative; padding-bottom: 5px; margin-bottom: 8px; border-bottom: 2px solid #000;">
-                <img src="https://drive.google.com/thumbnail?id=1pWEjzAU2G4AUC0RhIJ8cMHdLtLvQ4YJe&sz=w300" 
-                     style="position: absolute; left: 0; top: 0; width: 90px; height: auto;">
-                
-                <h1 style="color: #b71c1c; font-size: 32px; font-weight: bold; margin: 0; font-family: Arial, sans-serif;">
-                    SAGAR PUBLIC SCHOOL
-                </h1>
-                
-                <div style="color: #3e7d58; font-size: 13px; font-weight: bold; margin: 2px 0;">
-                    QUAZITOLA, BARSOI, KATIHAR, BIHAR 855102
-                </div>
-                <div style="font-size: 11px; font-weight: bold; line-height: 1.3; color: #000;">
-                    Session : 2026-27 | RTE Reg. No: 21211472023218114225<br>
-                    UDISE Code : 10101122703 | Email: sagarpublicschool2023@gmail.com
-                </div>
-
-                <div style="text-align:center; background:#ffff00; padding:4px; border:1px solid #000; font-weight:bold; margin-top:8px; text-transform: uppercase; font-size: 13px;">
-                   ☀️ Application Form for Admission ☀️
-                </div>
+                <img src="https://drive.google.com/thumbnail?id=1pWEjzAU2G4AUC0RhIJ8cMHdLtLvQ4YJe&sz=w300" style="position: absolute; left: 0; top: 0; width: 90px; height: auto;">
+                <h1 style="color: #b71c1c; font-size: 32px; font-weight: bold; margin: 0; font-family: Arial, sans-serif;">SAGAR PUBLIC SCHOOL</h1>
+                <div style="color: #3e7d58; font-size: 13px; font-weight: bold; margin: 2px 0;">QUAZITOLA, BARSOI, KATIHAR, BIHAR 855102</div>
+                <div style="font-size: 11px; font-weight: bold; line-height: 1.3; color: #000;">Session : 2026-27 | RTE Reg. No: 21211472023218114225<br>UDISE Code : 10101122703 | Email: sagarpublicschool2023@gmail.com</div>
+                <div style="text-align:center; background:#ffff00; padding:4px; border:1px solid #000; font-weight:bold; margin-top:8px; text-transform: uppercase; font-size: 13px;">☀️ Application Form for Admission ☀️</div>
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:5px;">
@@ -173,7 +150,7 @@
             <div class="section-bar">REGISTRATION DETAILS</div>
             <table class="p-table">
                 <tr><td class="sh">Registration No</td><td>${d['Registration No'] || ''}</td><td class="sh">APAAR ID</td><td>${d["APAAR ID"] || ''}</td></tr>
-                </table>
+            </table>
             <div class="section-bar">PERSONAL DETAILS</div>
             <table class="p-table">
                 <tr><td class="sh">Student Name</td><td>${d['Name of Student'] || ''}</td><td class="sh">Father's Name</td><td>${d["Father's Name"] || ''}</td></tr>
@@ -215,7 +192,10 @@
             <div style="margin-top:30px; display:flex; justify-content:space-between; font-size:11px; text-align:center;">
                 <div>${imgs.s ? `<img src="${imgs.s}" style="width:100px; height:35px;">` : '<br><br>'} <br>_________________<br>Student Signature</div>
                 <div><br><br>_________________<br>Guardian's Signature</div>
-                <div><br><br>_________________<br>Principal's Signature</div>
+                <div style="position:relative;">
+                    <img src="https://drive.google.com/file/d/1vTb3S-C3LCLUUkDg2X32tPYFGRcj23t_/view?usp=drivesdk" style="width:100px; height:auto; position:absolute; top:-25px; left:50%; transform:translateX(-50%);">
+                    <br><br>_________________<br>Principal's Signature
+                </div>
             </div>
         `;
         if(ex.appNo) {
@@ -228,10 +208,14 @@
         const b = document.getElementById('fBtn'); b.innerText = "Saving..."; b.disabled = true;
         const d = Object.fromEntries(new FormData(document.getElementById('admissionForm')));
         d.photoData = imgs.p; d.sigData = imgs.s;
+        
         try {
             const res = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(d) });
             const r = await res.json();
             if(r.status === "Success") {
+                // Application Number ko post object mein merge karna
+                d['Application Number'] = r.appNo;
+                
                 renderPrint({appNo: r.appNo, sNo: r.sNo});
                 b.style.display = "none";
                 document.getElementById('pBtn').style.display = "inline-block";
